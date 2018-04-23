@@ -112,47 +112,6 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
---- !u!1 &277491144
-GameObject:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  serializedVersion: 5
-  m_Component:
-  - component: {fileID: 277491146}
-  - component: {fileID: 277491145}
-  m_Layer: 0
-  m_Name: GameObject
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 0
---- !u!114 &277491145
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 277491144}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 028f446f81e5300448c96062f04126f3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  angle: 0
---- !u!4 &277491146
-Transform:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 277491144}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 9.29}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 1644068421}
-  m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &586907286
 GameObject:
   m_ObjectHideFlags: 0
@@ -162,6 +121,7 @@ GameObject:
   m_Component:
   - component: {fileID: 586907288}
   - component: {fileID: 586907287}
+  - component: {fileID: 586907289}
   m_Layer: 0
   m_Name: LookAt
   m_TagString: Untagged
@@ -182,10 +142,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cameraTarget: {fileID: 1271354654}
   cam: {fileID: 1133421640}
-  smoothingActive: 0
-  smoothSpeed: 1
-  deadZoneX: 0.2
-  deadZoneY: 0.2
+  resetMode: 0
+  smoothSpeed: 2
+  deadZoneX: 0.3
+  deadZoneY: 0.3
 --- !u!4 &586907288
 Transform:
   m_ObjectHideFlags: 0
@@ -197,8 +157,25 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1644068421}
-  m_RootOrder: 2
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!95 &586907289
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 586907286}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 0}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
 --- !u!1 &713649921
 GameObject:
   m_ObjectHideFlags: 0
@@ -237,7 +214,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1644068421}
-  m_RootOrder: 1
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &877512612
 GameObject:
@@ -701,6 +678,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 1379795519}
+  - component: {fileID: 1379795520}
   m_Layer: 0
   m_Name: FOV forcer
   m_TagString: Untagged
@@ -719,8 +697,19 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1644068421}
-  m_RootOrder: 3
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1379795520
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1379795518}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5eaab5a92068ebe4490f11d8974d01c0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1644068420
 GameObject:
   m_ObjectHideFlags: 0
@@ -748,7 +737,6 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: -9.29}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
-  - {fileID: 277491146}
   - {fileID: 713649923}
   - {fileID: 586907288}
   - {fileID: 1379795519}
@@ -788,11 +776,15 @@ PlayableDirector:
   m_SceneBindings:
   - key: {fileID: 114771009585254182, guid: 602196ddc79fdaa4fb687c0a6689a61e, type: 2}
     value: {fileID: 1197045772}
-  - key: {fileID: 114327013645062288, guid: 602196ddc79fdaa4fb687c0a6689a61e, type: 2}
-    value: {fileID: 277491144}
+  - key: {fileID: 0}
+    value: {fileID: 0}
   - key: {fileID: 114901542558691264, guid: 602196ddc79fdaa4fb687c0a6689a61e, type: 2}
     value: {fileID: 586907286}
   - key: {fileID: 114437166014585360, guid: 602196ddc79fdaa4fb687c0a6689a61e, type: 2}
     value: {fileID: 1271354654}
+  - key: {fileID: 0}
+    value: {fileID: 0}
+  - key: {fileID: 0}
+    value: {fileID: 586907286}
   m_ExposedReferences:
     m_References: []
