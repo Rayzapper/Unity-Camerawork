@@ -11,27 +11,29 @@ public class CutsceneLookAt : MonoBehaviour
 
     //private float fov, hFov;
     private bool camLock = false;
-    private Vector3 startPos;
-    private Quaternion startRot;
+    private Vector3 startPos,  startRot;
+    private float t = 0.0f;
 
     public void OnEnable()
     {
         camLock = true;
+        Debug.Log("Activate camlock");
         if (cam != null)
         {
             startPos = cam.transform.position;
-            startRot = cam.transform.rotation;
+            startRot = cam.transform.forward;
         }
     }
 
     public void OnDisable()
     {
         camLock = false;
+        Debug.Log("Deactivate camlock");
         if (resetMode)
             if (cam != null)
             {
                 cam.transform.position = startPos;
-                cam.transform.rotation = startRot;
+                cam.transform.forward = startRot;
             }
     }
 
@@ -49,8 +51,15 @@ public class CutsceneLookAt : MonoBehaviour
                 distanceDelta = Vector3.Distance(cam.transform.position, cameraTarget.transform.position);
                 angleFactor = Mathf.Abs(angleDelta) / 90;
                 distanceFactor = 40 / distanceDelta;
-                cam.transform.forward = Vector3.Slerp(cam.transform.forward, deltaVector, Time.deltaTime * smoothSpeed * angleFactor * distanceFactor);
+                //cam.transform.forward = Vector3.Slerp(cam.transform.forward, deltaVector, Time.deltaTime * smoothSpeed * angleFactor * distanceFactor);
+                //cam.transform.forward = Vector3.Slerp(startRot, deltaVector, Time.deltaTime * smoothSpeed * angleFactor * distanceFactor);
+                t += Time.deltaTime * smoothSpeed * angleFactor * distanceFactor;
+                t = Mathf.Clamp01(t);
+                //cam.transform.forward = Vector3.Slerp(cam.transform.forward, deltaVector, t);
+                cam.transform.forward = Vector3.Slerp(startRot, deltaVector, t);
             }
+            else t = 0;
+            Debug.Log("t is = " + t);
         }
     }
 }
