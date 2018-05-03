@@ -112,6 +112,66 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &474840577
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 474840579}
+  - component: {fileID: 474840578}
+  - component: {fileID: 474840580}
+  m_Layer: 0
+  m_Name: GameObject
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &474840578
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 474840577}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 25ef4f84269a7564d81c6f5ff28b4e44, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  target: {fileID: 1271354659}
+  speed: 1
+--- !u!4 &474840579
+Transform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 474840577}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 3.59, y: 4.05, z: -2.31}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 6
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!95 &474840580
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 474840577}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 0}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
 --- !u!1 &586907286
 GameObject:
   m_ObjectHideFlags: 0
@@ -128,7 +188,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &586907287
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -140,12 +200,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 504fd6031a7b14c4aa38674215ffd3ad, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cameraTarget: {fileID: 1271354654}
+  cameraTarget: {fileID: 1271354659}
   cam: {fileID: 1133421640}
   resetMode: 0
-  smoothSpeed: 2
-  deadZoneX: 0.3
-  deadZoneY: 0.3
+  smoothMode: 1
+  camLock: 0
+  relativeUp: 0
+  smoothSpeed: 3
+  deadZoneX: 0.4
+  deadZoneY: 0.4
 --- !u!4 &586907288
 Transform:
   m_ObjectHideFlags: 0
@@ -361,7 +424,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 23.72, y: 22.3, z: 0}
+  m_LocalEulerAnglesHint: {x: 0.0000004131234, y: 0.00001046632, z: 0.9099937}
 --- !u!95 &1133421642
 Animator:
   serializedVersion: 3
@@ -770,7 +833,7 @@ PlayableDirector:
   serializedVersion: 3
   m_PlayableAsset: {fileID: 11400000, guid: 602196ddc79fdaa4fb687c0a6689a61e, type: 2}
   m_InitialState: 1
-  m_WrapMode: 0
+  m_WrapMode: 2
   m_DirectorUpdateMode: 1
   m_InitialTime: 0
   m_SceneBindings:
@@ -778,7 +841,7 @@ PlayableDirector:
     value: {fileID: 1197045772}
   - key: {fileID: 0}
     value: {fileID: 0}
-  - key: {fileID: 114901542558691264, guid: 602196ddc79fdaa4fb687c0a6689a61e, type: 2}
+  - key: {fileID: 0}
     value: {fileID: 586907286}
   - key: {fileID: 114437166014585360, guid: 602196ddc79fdaa4fb687c0a6689a61e, type: 2}
     value: {fileID: 1271354654}
@@ -788,5 +851,9 @@ PlayableDirector:
     value: {fileID: 586907286}
   - key: {fileID: 114241043969559092, guid: 602196ddc79fdaa4fb687c0a6689a61e, type: 2}
     value: {fileID: 1133421637}
+  - key: {fileID: 114000395492619586, guid: 602196ddc79fdaa4fb687c0a6689a61e, type: 2}
+    value: {fileID: 586907286}
+  - key: {fileID: 0}
+    value: {fileID: 474840577}
   m_ExposedReferences:
     m_References: []

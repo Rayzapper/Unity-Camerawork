@@ -4,62 +4,128 @@ using UnityEngine;
 
 public class CutsceneLookAt : MonoBehaviour
 {
-    public GameObject cameraTarget;
+    public Transform cameraTarget;
     public Camera cam;
-    public bool resetMode = false;
-    public float smoothSpeed = 2.0f, deadZoneX = 0.3f, deadZoneY = 0.3f;
+    public bool resetMode = false, smoothMode = false, camLock = false, relativeUp = true;
+    public float smoothSpeed = 0.01f;
+    [Range(0.0f, 0.5f)]
+    public float deadZoneX = 0.3f, deadZoneY = 0.3f;
+    
+    private bool lockAquired = false, lockToggle = false, smoothing = false;
+    private Vector3 startPos,  startDir, lastDir, upDir;
+    private Quaternion startRot;
 
-    //private float fov, hFov;
-    private bool camLock = false;
-    private Vector3 startPos,  startRot;
-    private float t = 0.0f;
-
-    public void OnEnable()
+    private void ToggleLock()
     {
-        camLock = true;
-        Debug.Log("Activate camlock");
-        if (cam != null)
-        {
-            startPos = cam.transform.position;
-            startRot = cam.transform.forward;
-        }
+        startPos = cam.transform.position;
+        startDir = cam.transform.forward;
+        lastDir = startDir;
+        startRot = cam.transform.rotation;
+        smoothing = false;
+        upDir = cam.transform.up;
+        //Debug.Log("Toggle Lock");
     }
 
-    public void OnDisable()
+    private void ToggleUnlock()
     {
-        camLock = false;
-        Debug.Log("Deactivate camlock");
+        lockAquired = false;
         if (resetMode)
-            if (cam != null)
-            {
-                cam.transform.position = startPos;
-                cam.transform.forward = startRot;
-            }
+        {
+            cam.transform.position = startPos;
+            cam.transform.forward = startDir;
+            cam.transform.rotation = startRot;
+        }
+        if (smoothMode)
+            smoothing = true;
+        //Debug.Log("Toggle Unlock");
     }
 
     public void LateUpdate()
     {
+        if (camLock && !lockToggle)
+        {
+            lockToggle = true;
+            ToggleLock();
+        }
+        if (!camLock && lockToggle)
+        {
+            lockToggle = false;
+            ToggleUnlock();
+        }
+
+        if (!smoothMode)
+            smoothing = false;
+
+        Vector2 targetScreenPosition = cam.WorldToScreenPoint(cameraTarget.position);
+        Vector3 deltaVector = cameraTarget.position - cam.transform.position;
         if (camLock)
         {
-            Vector3 deltaVector = cameraTarget.transform.position - cam.transform.position;
-            Vector3 targetScreenPosition = cam.WorldToScreenPoint(cameraTarget.transform.position);
-            if (targetScreenPosition.x < Screen.width * deadZoneX || targetScreenPosition.x > Screen.width * (1 - deadZoneX) ||
-                targetScreenPosition.y < Screen.height * deadZoneY || targetScreenPosition.y > Screen.height * (1 - deadZoneY))
+            if (!lockAquired)
             {
-                float angleDelta, angleFactor, distanceDelta, distanceFactor = 1.0f;
-                angleDelta = Vector3.Angle(cam.transform.forward, deltaVector);
-                distanceDelta = Vector3.Distance(cam.transform.position, cameraTarget.transform.position);
-                angleFactor = Mathf.Abs(angleDelta) / 90;
-                distanceFactor = 40 / distanceDelta;
-                //cam.transform.forward = Vector3.Slerp(cam.transform.forward, deltaVector, Time.deltaTime * smoothSpeed * angleFactor * distanceFactor);
-                //cam.transform.forward = Vector3.Slerp(startRot, deltaVector, Time.deltaTime * smoothSpeed * angleFactor * distanceFactor);
-                t += Time.deltaTime * smoothSpeed * angleFactor * distanceFactor;
-                t = Mathf.Clamp01(t);
-                //cam.transform.forward = Vector3.Slerp(cam.transform.forward, deltaVector, t);
-                cam.transform.forward = Vector3.Slerp(startRot, deltaVector, t);
+                if (targetScreenPosition.x < Screen.width * deadZoneX || targetScreenPosition.x > Screen.width * (1 - deadZoneX) ||
+                    targetScreenPosition.y < Screen.height * deadZoneY || targetScreenPosition.y > Screen.height * (1 - deadZoneY))
+                {
+                    cam.transform.forward = lastDir;
+                    targetScreenPosition = cam.WorldToScreenPoint(cameraTarget.position);
+                    float step = smoothSpeed * Time.deltaTime;
+                    //cam.transform.forward = Vector3.RotateTowards(cam.transform.forward, deltaVector, step, 0.0f);
+                    Vector3 newDir = Vector3.RotateTowards(cam.transform.forward, deltaVector, step, 0.0f);
+                    if (relativeUp)
+                        cam.transform.rotation = Quaternion.LookRotation(newDir, upDir);
+                    else
+                        cam.transform.rotation = Quaternion.LookRotation(newDir);
+                }
+                if (targetScreenPosition.x >= Screen.width * deadZoneX && targetScreenPosition.x <= Screen.width * (1 - deadZoneX) &&
+                    targetScreenPosition.y >= Screen.height * deadZoneY && targetScreenPosition.y <= Screen.height * (1 - deadZoneY))
+                {
+                    lockAquired = true;
+                }
+                lastDir = cam.transform.forward;
             }
-            else t = 0;
-            Debug.Log("t is = " + t);
+            else
+            {
+                cam.transform.forward = lastDir;
+                targetScreenPosition = cam.WorldToScreenPoint(cameraTarget.position);
+                int safetyIterator = 0;
+                while (targetScreenPosition.x < Screen.width * deadZoneX || targetScreenPosition.x > Screen.width * (1 - deadZoneX) ||
+                    targetScreenPosition.y < Screen.height * deadZoneY || targetScreenPosition.y > Screen.height * (1 - deadZoneY))
+                {
+                    //cam.transform.forward = Vector3.RotateTowards(cam.transform.forward, deltaVector, 0.01f, 0.0f);
+                    Vector3 newDir = Vector3.RotateTowards(cam.transform.forward, deltaVector, 0.01f, 0.0f);
+                    if (relativeUp)
+                        cam.transform.rotation = Quaternion.LookRotation(newDir, upDir);
+                    else
+                        cam.transform.rotation = Quaternion.LookRotation(newDir);
+                    targetScreenPosition = cam.WorldToScreenPoint(cameraTarget.position);
+                    safetyIterator++;
+                    if (safetyIterator >= 200)
+                    {
+                        Debug.LogWarning("safety break was reached");
+                        break;
+                    }
+                }
+                lastDir = cam.transform.forward;
+            }
+        }
+        else
+        {
+            if (smoothing)
+            {
+                Vector3 targetDirection = cam.transform.forward, targetUp = cam.transform.up;
+                float step = smoothSpeed * Time.deltaTime;
+                //cam.transform.forward = Vector3.RotateTowards(lastDir, targetDirection, step, 0.0f);
+                Vector3 newDir = Vector3.RotateTowards(lastDir, targetDirection, step, 0.0f);
+                upDir = Vector3.RotateTowards(upDir, targetUp, step, 0.0f);
+                if (relativeUp)
+                    cam.transform.rotation = Quaternion.LookRotation(newDir, upDir);
+                else
+                    cam.transform.rotation = Quaternion.LookRotation(newDir);
+                if (cam.transform.forward == targetDirection.normalized)
+                {
+                    smoothing = false;
+                }
+                lastDir = cam.transform.forward;
+            }
         }
     }
 }
