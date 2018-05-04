@@ -2,14 +2,16 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CutsceneLookAt : MonoBehaviour
+public class CutsceneControl : MonoBehaviour
 {
     public Transform cameraTarget;
     public Camera cam;
-    public bool resetMode = false, smoothMode = false, camLock = false, relativeUp = true;
+    public bool resetRotMode = false, resetPosMode = false, smoothMode = false, camLock = false, relativeUp = true;
     public float smoothSpeed = 0.01f;
     [Range(0.0f, 0.5f)]
     public float deadZoneX = 0.3f, deadZoneY = 0.3f;
+    [Tooltip("This transformation's Up vector is used for Relative Up.")]
+    public Transform baseTransform = null;
     
     private bool lockAquired = false, lockToggle = false, smoothing = false;
     private Vector3 startPos,  startDir, lastDir, upDir;
@@ -22,18 +24,22 @@ public class CutsceneLookAt : MonoBehaviour
         lastDir = startDir;
         startRot = cam.transform.rotation;
         smoothing = false;
-        upDir = cam.transform.up;
+        if (baseTransform != null)
+            upDir = baseTransform.up;
         //Debug.Log("Toggle Lock");
     }
 
     private void ToggleUnlock()
     {
         lockAquired = false;
-        if (resetMode)
+        if (resetRotMode)
         {
-            cam.transform.position = startPos;
             cam.transform.forward = startDir;
             cam.transform.rotation = startRot;
+        }
+        if (resetPosMode)
+        {
+            cam.transform.position = startPos;
         }
         if (smoothMode)
             smoothing = true;
@@ -70,7 +76,7 @@ public class CutsceneLookAt : MonoBehaviour
                     float step = smoothSpeed * Time.deltaTime;
                     //cam.transform.forward = Vector3.RotateTowards(cam.transform.forward, deltaVector, step, 0.0f);
                     Vector3 newDir = Vector3.RotateTowards(cam.transform.forward, deltaVector, step, 0.0f);
-                    if (relativeUp)
+                    if (relativeUp && baseTransform != null)
                         cam.transform.rotation = Quaternion.LookRotation(newDir, upDir);
                     else
                         cam.transform.rotation = Quaternion.LookRotation(newDir);
@@ -92,7 +98,7 @@ public class CutsceneLookAt : MonoBehaviour
                 {
                     //cam.transform.forward = Vector3.RotateTowards(cam.transform.forward, deltaVector, 0.01f, 0.0f);
                     Vector3 newDir = Vector3.RotateTowards(cam.transform.forward, deltaVector, 0.01f, 0.0f);
-                    if (relativeUp)
+                    if (relativeUp && baseTransform != null)
                         cam.transform.rotation = Quaternion.LookRotation(newDir, upDir);
                     else
                         cam.transform.rotation = Quaternion.LookRotation(newDir);
@@ -115,8 +121,9 @@ public class CutsceneLookAt : MonoBehaviour
                 float step = smoothSpeed * Time.deltaTime;
                 //cam.transform.forward = Vector3.RotateTowards(lastDir, targetDirection, step, 0.0f);
                 Vector3 newDir = Vector3.RotateTowards(lastDir, targetDirection, step, 0.0f);
-                upDir = Vector3.RotateTowards(upDir, targetUp, step, 0.0f);
-                if (relativeUp)
+                if (baseTransform != null)
+                    upDir = Vector3.RotateTowards(upDir, targetUp, step, 0.0f);
+                if (relativeUp && baseTransform != null)
                     cam.transform.rotation = Quaternion.LookRotation(newDir, upDir);
                 else
                     cam.transform.rotation = Quaternion.LookRotation(newDir);
